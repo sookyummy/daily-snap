@@ -17,6 +17,8 @@ export async function GET(
 
   const { searchParams } = new URL(request.url);
   const month = searchParams.get("month"); // 'YYYY-MM'
+  const cursor = searchParams.get("cursor"); // mission_date cursor for pagination
+  const limit = parseInt(searchParams.get("limit") || "20", 10);
 
   let query = supabase
     .from("missions")
@@ -30,6 +32,12 @@ export async function GET(
     const endDate = new Date(year, mon, 0).toISOString().split("T")[0];
     query = query.gte("mission_date", startDate).lte("mission_date", endDate);
   }
+
+  if (cursor) {
+    query = query.lt("mission_date", cursor);
+  }
+
+  query = query.limit(limit);
 
   const { data: missions } = await query;
 
@@ -70,5 +78,8 @@ export async function GET(
     collageUrl: m.collage_url,
   }));
 
-  return NextResponse.json({ missions: result });
+  const nextCursor =
+    result.length === limit ? result[result.length - 1].date : null;
+
+  return NextResponse.json({ missions: result, nextCursor });
 }

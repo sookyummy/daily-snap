@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { formatCountdown } from "@/lib/utils/date";
 import PhotoUploader from "./PhotoUploader";
 import Link from "next/link";
@@ -81,10 +81,7 @@ export default function MissionView({
           </p>
         </div>
 
-        {/* History Feed */}
-        {history.length > 0 && (
-          <HistoryFeed groupId={groupId} history={history} />
-        )}
+        <HistoryFeed groupId={groupId} initialHistory={history} />
       </div>
     );
   }
@@ -156,64 +153,130 @@ export default function MissionView({
       </div>
 
       {/* History Feed */}
-      {history.length > 0 && (
-        <HistoryFeed groupId={groupId} history={history} />
-      )}
+      <HistoryFeed groupId={groupId} initialHistory={history} />
     </div>
   );
 }
 
+function formatFeedDate(dateStr: string): string {
+  const d = new Date(dateStr + "T00:00:00");
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  ];
+  return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
 function HistoryFeed({
   groupId,
-  history,
+  initialHistory,
 }: {
   groupId: string;
-  history: HistoryItem[];
+  initialHistory: HistoryItem[];
 }) {
+  const [items, setItems] = useState<HistoryItem[]>(initialHistory);
+  const [cursor, setCursor] = useState<string | null>(
+    initialHistory.length >= 9
+      ? initialHistory[initialHistory.length - 1].date
+      : null
+  );
+  const [loading, setLoading] = useState(false);
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  const loadMore = useCallback(async () => {
+    if (!cursor || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/groups/${groupId}/missions?cursor=${cursor}&limit=20`
+      );
+      const data = await res.json();
+      const newItems: HistoryItem[] = (data.missions ?? []).map(
+        (m: { id: string; date: string; keyword: string; emoji: string | null; collageUrl: string | null; status: string }) => ({
+          id: m.id,
+          date: m.date,
+          keyword: m.keyword,
+          emoji: m.emoji,
+          collageUrl: m.collageUrl,
+          isCompleted: m.status === "completed",
+        })
+      );
+      setItems((prev) => [...prev, ...newItems]);
+      setCursor(data.nextCursor);
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false);
+    }
+  }, [cursor, loading, groupId]);
+
+  useEffect(() => {
+    const el = loaderRef.current;
+    if (!el || !cursor) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMore();
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [cursor, loadMore]);
+
+  if (items.length === 0) return null;
+
   return (
     <div>
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700">Past Missions</h3>
-        <Link
-          href={`/groups/${groupId}/history`}
-          className="text-xs text-[var(--color-brand)]"
-        >
-          See all →
-        </Link>
-      </div>
-      <div className="grid grid-cols-3 gap-2">
-        {history.map((item) => (
-          <Link
-            key={item.id}
-            href={
-              item.isCompleted && item.collageUrl
-                ? `/groups/${groupId}/collage/${item.id}`
-                : `/groups/${groupId}/history`
-            }
-            className="group relative aspect-square overflow-hidden rounded-xl bg-gray-100"
-          >
+      <h3 className="mb-3 text-sm font-semibold text-gray-700">
+        Past Missions
+      </h3>
+      <div className="space-y-4">
+        {items.map((item) => (
+          <div key={item.id} className="overflow-hidden rounded-2xl border border-gray-100 bg-white">
             {item.collageUrl ? (
-              <img
-                src={item.collageUrl}
-                alt={item.keyword}
-                className="h-full w-full object-cover transition-transform group-active:scale-95"
-              />
+              <Link href={`/groups/${groupId}/collage/${item.id}`}>
+                <img
+                  src={item.collageUrl}
+                  alt={item.keyword}
+                  className="w-full aspect-square object-cover"
+                />
+              </Link>
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-2xl">
-                {item.emoji || "📸"}
+              <div className="flex aspect-[2/1] items-center justify-center bg-gray-50">
+                <span className="text-5xl">{item.emoji || "📸"}</span>
               </div>
             )}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1.5 pt-4">
-              <p className="text-[10px] font-medium text-white/80">
-                {item.date.slice(5)}
-              </p>
-              <p className="truncate text-xs font-semibold text-white">
-                {item.keyword}
-              </p>
+            <div className="flex items-center justify-between px-4 py-3">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">
+                  {item.emoji} {item.keyword}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {formatFeedDate(item.date)}
+                </p>
+              </div>
+              {item.isCompleted ? (
+                <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                  Done
+                </span>
+              ) : (
+                <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500">
+                  Incomplete
+                </span>
+              )}
             </div>
-          </Link>
+          </div>
         ))}
       </div>
+
+      {/* Infinite scroll trigger */}
+      {cursor && (
+        <div ref={loaderRef} className="flex justify-center py-6">
+          {loading && (
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-200 border-t-[var(--color-brand)]" />
+          )}
+        </div>
+      )}
     </div>
   );
 }
