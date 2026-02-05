@@ -9,7 +9,7 @@ function ensureVapid() {
   const privateKey = process.env.VAPID_PRIVATE_KEY;
   if (!publicKey || !privateKey || publicKey.length < 20) return false;
   try {
-    webpush.setVapidDetails("mailto:hello@dailysnap.app", publicKey, privateKey);
+    webpush.setVapidDetails("mailto:hello@stichy.app", publicKey, privateKey);
     vapidConfigured = true;
     return true;
   } catch {

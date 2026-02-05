@@ -69,6 +69,24 @@ export default async function GroupDetailPage({
     submissions = subs ?? [];
   }
 
+  // Get recent mission history (last 9, excluding today)
+  const { data: pastMissions } = await supabase
+    .from("missions")
+    .select("id, mission_date, keyword, emoji, is_completed, collage_url")
+    .eq("group_id", groupId)
+    .neq("mission_date", today)
+    .order("mission_date", { ascending: false })
+    .limit(9);
+
+  const history = (pastMissions ?? []).map((m) => ({
+    id: m.id,
+    date: m.mission_date,
+    keyword: m.keyword,
+    emoji: m.emoji,
+    collageUrl: m.collage_url,
+    isCompleted: m.is_completed,
+  }));
+
   const memberList =
     members?.map((m) => {
       const u = m.users as unknown as Record<string, unknown>;
@@ -102,12 +120,20 @@ export default async function GroupDetailPage({
           </a>
           <h1 className="text-lg font-bold text-gray-900">{group.name}</h1>
         </div>
-        <a
-          href={`/groups/${groupId}/settings`}
-          className="pt-4 text-gray-400"
-        >
-          ⚙️
-        </a>
+        <div className="flex items-center gap-3 pt-4">
+          <a
+            href={`/groups/${groupId}/history`}
+            className="text-gray-400"
+          >
+            📅
+          </a>
+          <a
+            href={`/groups/${groupId}/settings`}
+            className="text-gray-400"
+          >
+            ⚙️
+          </a>
+        </div>
       </header>
 
       {/* Mission Content */}
@@ -117,6 +143,7 @@ export default async function GroupDetailPage({
         members={memberList}
         currentUserId={profile.id}
         isCompleted={mission?.is_completed ?? false}
+        history={history}
       />
 
       {/* Invite Sheet (shown after group creation) */}

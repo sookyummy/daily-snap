@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Daily Snap",
-    short_name: "DailySnap",
-    description: "Daily photo missions with your group",
+    name: "Stichy",
+    short_name: "Stichy",
+    description: "Stitch your moments together",
     start_url: "/home",
     display: "standalone",
     background_color: "#ffffff",

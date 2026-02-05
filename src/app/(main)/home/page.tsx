@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import PushPermissionBanner from "@/components/push/PushPermissionBanner";
+import BannerSlider from "@/components/home/BannerSlider";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -48,13 +49,11 @@ export default async function HomePage() {
 
     groups = await Promise.all(
       (groupData ?? []).map(async (group) => {
-        // Get member count
         const { count: memberCount } = await supabase
           .from("group_members")
           .select("*", { count: "exact", head: true })
           .eq("group_id", group.id);
 
-        // Get today's mission
         const { data: mission } = await supabase
           .from("missions")
           .select("*")
@@ -62,7 +61,6 @@ export default async function HomePage() {
           .eq("mission_date", today)
           .single();
 
-        // Get submission count for today
         let completedCount = 0;
         if (mission) {
           const { count } = await supabase
@@ -94,17 +92,20 @@ export default async function HomePage() {
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-5 pb-2 pt-safe-top">
-        <h1 className="pt-4 text-2xl font-bold text-gray-900">Daily Snap</h1>
+        <h1 className="pt-4 text-2xl font-bold text-gray-900">Stichy</h1>
         <Link
           href="/groups/new"
           className="mt-4 flex h-9 items-center gap-1 rounded-full bg-[var(--color-brand)] px-4 text-sm font-semibold text-white transition-all active:scale-95"
         >
-          + 그룹
+          + Group
         </Link>
       </header>
 
       {/* Push Permission */}
       <PushPermissionBanner />
+
+      {/* Banner Slider */}
+      <BannerSlider />
 
       {/* Group List */}
       <main className="flex-1 px-5 py-4">
@@ -112,17 +113,25 @@ export default async function HomePage() {
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="mb-4 text-5xl">📷</div>
             <h2 className="mb-2 text-lg font-semibold text-gray-800">
-              아직 참여한 그룹이 없어요
+              No groups yet
             </h2>
             <p className="mb-6 text-sm text-gray-500">
-              그룹을 만들거나 초대 링크로 참여해보세요
+              Create a group or join one with an invite link
             </p>
-            <Link
-              href="/groups/new"
-              className="rounded-xl bg-[var(--color-brand)] px-6 py-3 text-sm font-semibold text-white transition-all active:scale-95"
-            >
-              첫 그룹 만들기
-            </Link>
+            <div className="flex flex-col gap-3 w-full max-w-xs">
+              <Link
+                href="/groups/new"
+                className="rounded-xl bg-[var(--color-brand)] px-6 py-3 text-center text-sm font-semibold text-white transition-all active:scale-95"
+              >
+                Create First Group
+              </Link>
+              <Link
+                href="/join"
+                className="rounded-xl border border-gray-200 px-6 py-3 text-center text-sm font-semibold text-gray-700 transition-all active:scale-95"
+              >
+                Join by Link
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="space-y-3">
@@ -142,14 +151,14 @@ export default async function HomePage() {
                     </span>
                   </div>
                   <span className="text-xs text-gray-400">
-                    {group.member_count}/{group.max_members}명
+                    {group.member_count}/{group.max_members}
                   </span>
                 </div>
 
                 {group.today_mission ? (
                   <>
                     <p className="mb-1.5 text-sm text-gray-600">
-                      오늘의 미션:{" "}
+                      Today:{" "}
                       <span className="font-medium">
                         {group.today_mission.keyword}{" "}
                         {group.today_mission.emoji}
@@ -166,14 +175,14 @@ export default async function HomePage() {
                       </div>
                       <span className="ml-3 text-xs text-gray-500">
                         {group.is_today_completed
-                          ? "완료!"
-                          : `${group.today_progress.completed}/${group.today_progress.total}명`}
+                          ? "Done!"
+                          : `${group.today_progress.completed}/${group.today_progress.total}`}
                       </span>
                     </div>
                   </>
                 ) : (
                   <p className="text-sm text-gray-400">
-                    오늘의 미션이 아직 없어요
+                    No mission yet today
                   </p>
                 )}
               </Link>

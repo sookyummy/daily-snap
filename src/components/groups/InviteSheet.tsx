@@ -30,8 +30,8 @@ export default function InviteSheet({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Daily Snap - ${groupName}`,
-          text: `"${groupName}" 그룹에 초대합니다! 매일 사진 미션을 함께 해요 📸`,
+          title: `Stichy - ${groupName}`,
+          text: `Join "${groupName}" on Stichy! Let's do daily photo missions together 📸`,
           url: inviteLink,
         });
       } catch {
@@ -48,7 +48,7 @@ export default function InviteSheet({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/30">
       <div className="w-full max-w-md rounded-t-3xl bg-white px-5 pb-8 pt-4">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-900">친구 초대</h2>
+          <h2 className="text-lg font-bold text-gray-900">Invite Friends</h2>
           <button
             onClick={() => setOpen(false)}
             className="text-gray-400 hover:text-gray-600"
@@ -58,7 +58,7 @@ export default function InviteSheet({
         </div>
 
         <p className="mb-4 text-sm text-gray-500">
-          초대 링크를 공유해서 친구들을 초대하세요
+          Share the invite link to bring your friends in
         </p>
 
         <div className="mb-4 flex items-center gap-2 rounded-xl bg-gray-50 px-3 py-2.5">
@@ -69,7 +69,7 @@ export default function InviteSheet({
             onClick={handleCopy}
             className="shrink-0 rounded-lg bg-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors"
           >
-            {copied ? "복사됨!" : "복사"}
+            {copied ? "Copied!" : "Copy"}
           </button>
         </div>
 
@@ -78,18 +78,18 @@ export default function InviteSheet({
             onClick={handleShare}
             className="flex-1 rounded-xl bg-[var(--color-brand)] py-3 text-sm font-semibold text-white transition-all active:scale-[0.98]"
           >
-            공유하기
+            Share
           </button>
           <button
             onClick={handleCopy}
             className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-semibold text-gray-700 transition-all active:scale-[0.98]"
           >
-            링크 복사
+            Copy Link
           </button>
         </div>
 
         <p className="text-center text-xs text-gray-400">
-          현재 {memberCount}/{maxMembers}명 · 48시간 내 유효
+          {memberCount}/{maxMembers} members · Valid for 48 hours
         </p>
       </div>
     </div>

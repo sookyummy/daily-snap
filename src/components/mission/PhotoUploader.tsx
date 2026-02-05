@@ -26,7 +26,7 @@ export default function PhotoUploader({
     if (!selected) return;
 
     if (selected.size > 10 * 1024 * 1024) {
-      setError("10MB 이하의 사진만 업로드할 수 있습니다");
+      setError("Photos must be under 10MB");
       return;
     }
 
@@ -52,7 +52,7 @@ export default function PhotoUploader({
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "업로드에 실패했습니다");
+        setError(data.error || "Upload failed");
         return;
       }
 
@@ -60,7 +60,7 @@ export default function PhotoUploader({
       setFile(null);
       router.refresh();
     } catch {
-      setError("오류가 발생했습니다");
+      setError("An error occurred");
     } finally {
       setUploading(false);
     }
@@ -100,14 +100,14 @@ export default function PhotoUploader({
               disabled={uploading}
               className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-semibold text-gray-700 transition-all active:scale-[0.98]"
             >
-              취소
+              Cancel
             </button>
             <button
               onClick={handleUpload}
               disabled={uploading}
               className="flex-1 rounded-xl bg-[var(--color-brand)] py-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50"
             >
-              {uploading ? "업로드 중..." : "업로드"}
+              {uploading ? "Uploading..." : "Upload"}
             </button>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function PhotoUploader({
           onClick={() => inputRef.current?.click()}
           className="w-full rounded-2xl bg-[var(--color-brand)] py-4 text-base font-semibold text-white transition-all active:scale-[0.98]"
         >
-          {hasSubmitted ? "📷 다시 찍기" : "📷 사진 촬영하기"}
+          {hasSubmitted ? "📷 Retake Photo" : "📷 Take Photo"}
         </button>
       )}
 

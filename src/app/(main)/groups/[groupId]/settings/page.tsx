@@ -64,7 +64,7 @@ export default function GroupSettingsPage() {
   };
 
   const handleLeaveGroup = async () => {
-    if (!confirm("정말 그룹을 나가시겠습니까?")) return;
+    if (!confirm("Are you sure you want to leave this group?")) return;
     const supabase = createClient();
     await supabase
       .from("group_members")
@@ -91,32 +91,32 @@ export default function GroupSettingsPage() {
         >
           ←
         </button>
-        <h1 className="pt-4 text-lg font-bold text-gray-900">그룹 설정</h1>
+        <h1 className="pt-4 text-lg font-bold text-gray-900">Group Settings</h1>
       </header>
 
       <div className="px-5 py-4 space-y-6">
         {/* Group Info */}
         <div>
           <h2 className="mb-2 text-sm font-semibold text-gray-700">
-            그룹 정보
+            Group Info
           </h2>
           <div className="rounded-xl border border-gray-100 p-4 space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm text-gray-500">이름</span>
+              <span className="text-sm text-gray-500">Name</span>
               <span className="text-sm font-medium text-gray-900">
                 {group.name}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-500">미션 모드</span>
+              <span className="text-sm text-gray-500">Mission Mode</span>
               <span className="text-sm font-medium text-gray-900">
-                {group.mission_mode === "auto" ? "자동" : "직접 설정"}
+                {group.mission_mode === "auto" ? "Auto" : "Manual"}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-500">최대 인원</span>
+              <span className="text-sm text-gray-500">Max Members</span>
               <span className="text-sm font-medium text-gray-900">
-                {group.max_members}명
+                {group.max_members}
               </span>
             </div>
           </div>
@@ -125,20 +125,20 @@ export default function GroupSettingsPage() {
         {/* Invite Link */}
         <div>
           <h2 className="mb-2 text-sm font-semibold text-gray-700">
-            초대 링크
+            Invite Link
           </h2>
           <button
             onClick={handleCopyInvite}
             className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-700 transition-all active:scale-[0.98]"
           >
-            {copied ? "복사됨! ✓" : "초대 링크 복사"}
+            {copied ? "Copied! ✓" : "Copy Invite Link"}
           </button>
         </div>
 
         {/* Members */}
         <div>
           <h2 className="mb-2 text-sm font-semibold text-gray-700">
-            멤버 ({members.length}/{group.max_members})
+            Members ({members.length}/{group.max_members})
           </h2>
           <div className="space-y-2">
             {members.map((member) => (
@@ -161,13 +161,13 @@ export default function GroupSettingsPage() {
                   <p className="text-sm font-medium text-gray-900">
                     {member.nickname}
                     {member.id === currentUserId && (
-                      <span className="ml-1 text-gray-400">(나)</span>
+                      <span className="ml-1 text-gray-400">(You)</span>
                     )}
                   </p>
                 </div>
                 {member.isOwner && (
                   <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs text-yellow-700">
-                    👑 방장
+                    👑 Owner
                   </span>
                 )}
               </div>
@@ -180,7 +180,7 @@ export default function GroupSettingsPage() {
           href={`/groups/${groupId}/history`}
           className="block w-full rounded-xl border border-gray-200 py-3 text-center text-sm font-medium text-gray-700 transition-all active:scale-[0.98]"
         >
-          미션 히스토리 보기
+          View Mission History
         </a>
 
         {/* Leave Group */}
@@ -189,7 +189,7 @@ export default function GroupSettingsPage() {
             onClick={handleLeaveGroup}
             className="w-full rounded-xl py-3 text-sm font-medium text-red-500"
           >
-            그룹 나가기
+            Leave Group
           </button>
         )}
       </div>

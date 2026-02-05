@@ -16,9 +16,8 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center px-6">
       <div className="mb-12 text-center">
-        <div className="mb-4 text-6xl">📸</div>
-        <h1 className="mb-2 text-3xl font-bold text-gray-900">Daily Snap</h1>
-        <p className="text-gray-500">매일 하나의 미션, 함께 찍는 순간</p>
+        <h1 className="mb-2 text-4xl font-bold text-gray-900">Stichy</h1>
+        <p className="text-gray-500">stitch your moments together</p>
       </div>
 
       <button
@@ -43,7 +42,7 @@ export default function LoginPage() {
             fill="#EA4335"
           />
         </svg>
-        Google로 시작하기
+        Continue with Google
       </button>
     </div>
   );

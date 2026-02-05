@@ -17,11 +17,11 @@ export default function ProfileSetupPage() {
 
   const validateNickname = (value: string): string => {
     if (value.length < MIN_NICKNAME_LENGTH)
-      return `최소 ${MIN_NICKNAME_LENGTH}자 이상 입력해주세요`;
+      return `Minimum ${MIN_NICKNAME_LENGTH} characters`;
     if (value.length > MAX_NICKNAME_LENGTH)
-      return `최대 ${MAX_NICKNAME_LENGTH}자까지 가능합니다`;
+      return `Maximum ${MAX_NICKNAME_LENGTH} characters`;
     if (!NICKNAME_REGEX.test(value))
-      return "한글, 영문, 숫자, 언더스코어만 사용 가능합니다";
+      return "Only letters, numbers, and underscores allowed";
     return "";
   };
 
@@ -55,13 +55,13 @@ export default function ProfileSetupPage() {
         .eq("auth_id", user.id);
 
       if (updateError) {
-        setError("저장에 실패했습니다. 다시 시도해주세요.");
+        setError("Failed to save. Please try again.");
         return;
       }
 
       router.push("/home");
     } catch {
-      setError("오류가 발생했습니다.");
+      setError("An error occurred.");
     } finally {
       setLoading(false);
     }
@@ -73,10 +73,10 @@ export default function ProfileSetupPage() {
         <div className="mb-8 text-center">
           <div className="mb-3 text-5xl">👤</div>
           <h1 className="mb-1 text-2xl font-bold text-gray-900">
-            프로필 설정
+            Profile Setup
           </h1>
           <p className="text-sm text-gray-500">
-            Daily Snap에서 사용할 닉네임을 설정해주세요
+            Choose a nickname to get started
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function ProfileSetupPage() {
               htmlFor="nickname"
               className="mb-1.5 block text-sm font-medium text-gray-700"
             >
-              닉네임
+              Nickname
             </label>
             <input
               id="nickname"
@@ -102,7 +102,7 @@ export default function ProfileSetupPage() {
             />
             <div className="mt-1.5 flex items-center justify-between">
               <span className="text-xs text-gray-400">
-                {MIN_NICKNAME_LENGTH}-{MAX_NICKNAME_LENGTH}자, 한글/영문/숫자
+                {MIN_NICKNAME_LENGTH}-{MAX_NICKNAME_LENGTH}, Letters/Numbers
               </span>
               <span className="text-xs text-gray-400">
                 {nickname.length}/{MAX_NICKNAME_LENGTH}
@@ -118,7 +118,7 @@ export default function ProfileSetupPage() {
             disabled={loading || nickname.length < MIN_NICKNAME_LENGTH}
             className="w-full rounded-xl bg-[var(--color-brand)] px-6 py-3.5 text-base font-semibold text-white transition-all hover:bg-[var(--color-brand-dark)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "저장 중..." : "시작하기"}
+            {loading ? "Saving..." : "Get Started"}
           </button>
         </form>
       </div>

@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
     for (const member of members ?? []) {
       if (!submittedIds.has(member.user_id)) {
         await sendPushToUser(supabase, member.user_id, {
-          title: "아직 사진을 안 올렸어요! ⏰",
-          body: `오늘의 미션: ${mission.keyword} ${mission.emoji || ""}. 내일 아침까지 시간이 얼마 안 남았어요!`,
+          title: "You haven't uploaded yet! ⏰",
+          body: `Today's mission: ${mission.keyword} ${mission.emoji || ""}. Time is running out!`,
           url: `/groups/${mission.group_id}`,
         });
         reminders++;

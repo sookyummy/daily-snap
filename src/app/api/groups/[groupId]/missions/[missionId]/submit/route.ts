@@ -58,7 +58,7 @@ export async function POST(
   }
 
   if (new Date(mission.deadline) < new Date()) {
-    return NextResponse.json({ error: "미션이 마감되었습니다" }, { status: 410 });
+    return NextResponse.json({ error: "Mission has ended" }, { status: 410 });
   }
 
   // Parse form data
@@ -72,14 +72,14 @@ export async function POST(
   // Validate file
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     return NextResponse.json(
-      { error: "지원하지 않는 이미지 형식입니다" },
+      { error: "Unsupported image format" },
       { status: 400 }
     );
   }
 
   if (file.size > MAX_PHOTO_SIZE_BYTES) {
     return NextResponse.json(
-      { error: "10MB 이하의 사진만 업로드할 수 있습니다" },
+      { error: "Photos must be under 10MB" },
       { status: 400 }
     );
   }
@@ -204,7 +204,7 @@ export async function POST(
         keyword: mission.keyword,
         emoji: mission.emoji || "📸",
         date: dateStr,
-        groupName: group?.name || "Daily Snap",
+        groupName: group?.name || "Stichy",
       });
 
       // Upload collage
@@ -239,7 +239,7 @@ export async function POST(
     submissionId: existingSub?.id ?? "new",
     isGroupCompleted,
     message: isGroupCompleted
-      ? "🎉 모두 완료! 콜라주가 생성되었습니다"
-      : `업로드 완료! ${(memberCount ?? 0) - (submissionCount ?? 0)}명이 아직 참여하지 않았어요`,
+      ? "All done! Your collage has been created"
+      : `Uploaded! ${(memberCount ?? 0) - (submissionCount ?? 0)} member(s) still pending`,
   });
 }

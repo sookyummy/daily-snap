@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       .select("*", { count: "exact", head: true })
       .eq("group_id", group.id);
 
-    if ((memberCount ?? 0) < 2) {
+    if ((memberCount ?? 0) < 1) {
       skipped++;
       continue;
     }

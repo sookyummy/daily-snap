@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { formatCountdown } from "@/lib/utils/date";
 import PhotoUploader from "./PhotoUploader";
+import Link from "next/link";
 
 type Member = {
   id: string;
@@ -25,12 +26,22 @@ type Mission = {
   collage_url: string | null;
 };
 
+type HistoryItem = {
+  id: string;
+  date: string;
+  keyword: string;
+  emoji: string | null;
+  collageUrl: string | null;
+  isCompleted: boolean;
+};
+
 type Props = {
   groupId: string;
   mission: Mission | null;
   members: Member[];
   currentUserId: string;
   isCompleted: boolean;
+  history?: HistoryItem[];
 };
 
 export default function MissionView({
@@ -39,6 +50,7 @@ export default function MissionView({
   members,
   currentUserId,
   isCompleted,
+  history = [],
 }: Props) {
   const [countdown, setCountdown] = useState("");
 
@@ -54,103 +66,154 @@ export default function MissionView({
     (m) => m.id === currentUserId
   )?.hasSubmitted;
 
+  const submittedCount = members.filter((m) => m.hasSubmitted).length;
+
   if (!mission) {
     return (
-      <div className="flex flex-col items-center justify-center px-5 py-20 text-center">
-        <div className="mb-4 text-5xl">⏳</div>
-        <h2 className="mb-2 text-lg font-semibold text-gray-800">
-          오늘의 미션이 아직 없어요
-        </h2>
-        <p className="text-sm text-gray-500">
-          매일 오전 10시에 새로운 미션이 시작됩니다
-        </p>
+      <div className="px-5 py-4">
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="mb-4 text-5xl">⏳</div>
+          <h2 className="mb-2 text-lg font-semibold text-gray-800">
+            No mission yet today
+          </h2>
+          <p className="text-sm text-gray-500">
+            A new mission starts every day at 10:00 AM
+          </p>
+        </div>
+
+        {/* History Feed */}
+        {history.length > 0 && (
+          <HistoryFeed groupId={groupId} history={history} />
+        )}
       </div>
     );
   }
 
   return (
     <div className="px-5 py-4">
-      {/* Mission Card */}
-      <div className="mb-6 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 p-6 text-center">
+      {/* Mission Card with Actions */}
+      <div className="mb-4 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 p-5">
         <p className="mb-1 text-xs font-medium text-gray-500 uppercase tracking-wider">
-          오늘의 미션
+          TODAY&apos;S MISSION
         </p>
-        <div className="mb-2 text-4xl">{mission.emoji || "📸"}</div>
-        <h2 className="mb-1 text-2xl font-bold text-gray-900">
-          {mission.keyword}
-        </h2>
-        {mission.description && (
-          <p className="text-sm text-gray-600">{mission.description}</p>
+        <div className="flex items-center gap-3 mb-3">
+          <span className="text-3xl">{mission.emoji || "📸"}</span>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-900">
+              {mission.keyword}
+            </h2>
+            {mission.description && (
+              <p className="text-sm text-gray-600">{mission.description}</p>
+            )}
+          </div>
+          <span className="text-xs text-gray-400">⏰ {countdown}</span>
+        </div>
+
+        {/* Action buttons inside mission card */}
+        {isCompleted ? (
+          <div className="flex gap-2">
+            <div className="flex-1 rounded-xl bg-green-100 py-2.5 text-center text-sm font-semibold text-green-700">
+              All done! 🎉
+            </div>
+            {mission.collage_url && (
+              <Link
+                href={`/groups/${groupId}/collage/${mission.id}`}
+                className="flex-1 rounded-xl bg-[var(--color-brand)] py-2.5 text-center text-sm font-semibold text-white transition-all active:scale-[0.98]"
+              >
+                View Collage
+              </Link>
+            )}
+          </div>
+        ) : (
+          <PhotoUploader
+            groupId={groupId}
+            missionId={mission.id}
+            hasSubmitted={!!currentUserSubmitted}
+          />
         )}
-        <p className="mt-3 text-xs text-gray-400">⏰ {countdown}</p>
       </div>
 
-      {/* Completion Banner */}
-      {isCompleted && (
-        <div className="mb-6 rounded-2xl bg-green-50 p-4 text-center">
-          <div className="mb-1 text-2xl">🎉</div>
-          <p className="font-semibold text-green-800">모두 완료!</p>
-          {mission.collage_url && (
-            <a
-              href={`/groups/${groupId}/collage/${mission.id}`}
-              className="mt-2 inline-block rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white"
-            >
-              콜라주 보기
-            </a>
-          )}
-        </div>
-      )}
-
-      {/* Member Grid */}
-      <div className="mb-6">
-        <h3 className="mb-3 text-sm font-semibold text-gray-700">
-          참여 현황 ({members.filter((m) => m.hasSubmitted).length}/
-          {members.length})
-        </h3>
-        <div className="grid grid-cols-2 gap-3">
+      {/* Compact Member Status */}
+      <div className="mb-6 flex items-center gap-2">
+        <div className="flex -space-x-2">
           {members.map((member) => (
             <div
               key={member.id}
-              className="relative overflow-hidden rounded-xl border border-gray-100 bg-gray-50"
+              className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white text-xs font-medium ${
+                member.hasSubmitted
+                  ? "bg-green-100 text-green-700"
+                  : "bg-gray-100 text-gray-400"
+              }`}
+              title={`${member.nickname}${member.hasSubmitted ? " ✓" : ""}`}
             >
-              {/* Photo area */}
-              <div className="aspect-square flex items-center justify-center">
-                {member.hasSubmitted && (member.thumbnailUrl || member.photoUrl) ? (
-                  <img
-                    src={member.thumbnailUrl || member.photoUrl!}
-                    alt={member.nickname}
-                    className="h-full w-full object-cover"
-                  />
-                ) : member.hasSubmitted ? (
-                  <div className="flex h-full w-full items-center justify-center bg-gray-200">
-                    <span className="text-3xl">✅</span>
-                  </div>
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gray-100">
-                    <span className="text-3xl">⏳</span>
-                  </div>
-                )}
-              </div>
-              {/* Name tag */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                <p className="text-xs font-medium text-white">
-                  {member.nickname}
-                  {member.isOwner ? " 👑" : ""}
-                </p>
-              </div>
+              {member.nickname.charAt(0).toUpperCase()}
             </div>
           ))}
         </div>
+        <span className="text-xs text-gray-500">
+          {submittedCount}/{members.length} submitted
+        </span>
       </div>
 
-      {/* Upload Button */}
-      {!isCompleted && (
-        <PhotoUploader
-          groupId={groupId}
-          missionId={mission.id}
-          hasSubmitted={!!currentUserSubmitted}
-        />
+      {/* History Feed */}
+      {history.length > 0 && (
+        <HistoryFeed groupId={groupId} history={history} />
       )}
+    </div>
+  );
+}
+
+function HistoryFeed({
+  groupId,
+  history,
+}: {
+  groupId: string;
+  history: HistoryItem[];
+}) {
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-gray-700">Past Missions</h3>
+        <Link
+          href={`/groups/${groupId}/history`}
+          className="text-xs text-[var(--color-brand)]"
+        >
+          See all →
+        </Link>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        {history.map((item) => (
+          <Link
+            key={item.id}
+            href={
+              item.isCompleted && item.collageUrl
+                ? `/groups/${groupId}/collage/${item.id}`
+                : `/groups/${groupId}/history`
+            }
+            className="group relative aspect-square overflow-hidden rounded-xl bg-gray-100"
+          >
+            {item.collageUrl ? (
+              <img
+                src={item.collageUrl}
+                alt={item.keyword}
+                className="h-full w-full object-cover transition-transform group-active:scale-95"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-2xl">
+                {item.emoji || "📸"}
+              </div>
+            )}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1.5 pt-4">
+              <p className="text-[10px] font-medium text-white/80">
+                {item.date.slice(5)}
+              </p>
+              <p className="truncate text-xs font-semibold text-white">
+                {item.keyword}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-export const APP_NAME = "Daily Snap";
+export const APP_NAME = "Stichy";
 export const MAX_NICKNAME_LENGTH = 16;
 export const MIN_NICKNAME_LENGTH = 2;
 export const NICKNAME_REGEX = /^[a-zA-Z0-9가-힣_]+$/;

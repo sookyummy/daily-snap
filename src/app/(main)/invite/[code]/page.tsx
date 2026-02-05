@@ -55,7 +55,7 @@ export default function InvitePage() {
           member_count: count ?? 0,
         });
       } else {
-        setError("유효하지 않은 초대 링크입니다");
+        setError("Invalid invite link");
       }
       setLoading(false);
     }
@@ -82,13 +82,13 @@ export default function InvitePage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "참여에 실패했습니다");
+        setError(data.error || "Failed to join");
         return;
       }
 
       router.push(`/groups/${data.groupId}`);
     } catch {
-      setError("오류가 발생했습니다");
+      setError("An error occurred");
     } finally {
       setJoining(false);
     }
@@ -113,26 +113,26 @@ export default function InvitePage() {
               onClick={() => router.push("/home")}
               className="mt-6 rounded-xl bg-gray-100 px-6 py-3 text-sm font-medium text-gray-700"
             >
-              홈으로 가기
+              Go Home
             </button>
           </>
         ) : group ? (
           <>
             <div className="mb-4 text-5xl">📸</div>
             <h1 className="mb-2 text-xl font-bold text-gray-900">
-              그룹 초대
+              Group Invite
             </h1>
             <div className="mb-6 rounded-2xl border border-gray-100 bg-gray-50 p-4">
               <p className="text-lg font-semibold text-gray-900">
                 {group.name}
               </p>
               <p className="mt-1 text-sm text-gray-500">
-                {group.member_count}/{group.max_members}명 참여 중
+                {group.member_count}/{group.max_members} members
               </p>
             </div>
 
             {group.member_count >= group.max_members ? (
-              <p className="text-sm text-red-500">인원이 가득 찼습니다</p>
+              <p className="text-sm text-red-500">Group is full</p>
             ) : (
               <button
                 onClick={handleJoin}
@@ -140,10 +140,10 @@ export default function InvitePage() {
                 className="w-full rounded-xl bg-[var(--color-brand)] px-6 py-3.5 text-base font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50"
               >
                 {joining
-                  ? "참여 중..."
+                  ? "Joining..."
                   : isLoggedIn
-                    ? "참여하기"
-                    : "로그인하고 참여하기"}
+                    ? "Join Group"
+                    : "Sign in & Join"}
               </button>
             )}
           </>

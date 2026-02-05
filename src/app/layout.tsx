@@ -8,12 +8,12 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Daily Snap",
-  description: "Daily photo missions with your group",
+  title: "Stichy",
+  description: "Stitch your moments together",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Daily Snap",
+    title: "Stichy",
   },
   formatDetection: { telephone: false },
 };
@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="en">
       <body className={`${geistSans.variable} font-sans antialiased`}>
         <div className="mx-auto min-h-dvh max-w-md bg-white">{children}</div>
       </body>

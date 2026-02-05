@@ -40,6 +40,11 @@ export default function HistoryPage() {
 
   const [year, month] = currentMonth.split("-").map(Number);
 
+  const MONTH_NAMES = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+  ];
+
   const prevMonth = () => {
     const d = new Date(year, month - 2, 1);
     setCurrentMonth(
@@ -81,7 +86,7 @@ export default function HistoryPage() {
         >
           ←
         </button>
-        <h1 className="pt-4 text-lg font-bold text-gray-900">미션 히스토리</h1>
+        <h1 className="pt-4 text-lg font-bold text-gray-900">Mission History</h1>
       </header>
 
       {/* Calendar */}
@@ -91,7 +96,7 @@ export default function HistoryPage() {
             ←
           </button>
           <span className="font-semibold text-gray-900">
-            {year}년 {month}월
+            {MONTH_NAMES[month - 1]} {year}
           </span>
           <button onClick={nextMonth} className="p-2 text-gray-500">
             →
@@ -100,7 +105,7 @@ export default function HistoryPage() {
 
         {/* Day headers */}
         <div className="mb-2 grid grid-cols-7 text-center text-xs text-gray-400">
-          {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
             <div key={d}>{d}</div>
           ))}
         </div>
@@ -136,7 +141,7 @@ export default function HistoryPage() {
           </div>
         ) : missions.length === 0 ? (
           <p className="py-8 text-center text-sm text-gray-400">
-            이 달에는 미션이 없습니다
+            No missions this month
           </p>
         ) : (
           <div className="space-y-3">
@@ -164,22 +169,22 @@ export default function HistoryPage() {
                     }`}
                   >
                     {mission.status === "completed"
-                      ? "완료"
+                      ? "Done"
                       : mission.status === "in_progress"
-                        ? "진행중"
-                        : "미완료"}
+                        ? "In Progress"
+                        : "Incomplete"}
                   </span>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-xs text-gray-500">
-                    {mission.completedCount}/{mission.totalCount}명 참여
+                    {mission.completedCount}/{mission.totalCount} participated
                   </span>
                   {mission.status === "completed" && mission.collageUrl && (
                     <Link
                       href={`/groups/${groupId}/collage/${mission.id}`}
                       className="text-xs font-medium text-[var(--color-brand)]"
                     >
-                      콜라주 보기 →
+                      View Collage →
                     </Link>
                   )}
                 </div>

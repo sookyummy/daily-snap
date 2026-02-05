@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
   if (!group) {
     return NextResponse.json(
-      { error: "유효하지 않은 초대 링크입니다" },
+      { error: "Invalid invite link" },
       { status: 404 }
     );
   }
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     new Date(group.invite_expires_at) < new Date()
   ) {
     return NextResponse.json(
-      { error: "초대 링크가 만료되었습니다" },
+      { error: "Invite link has expired" },
       { status: 410 }
     );
   }
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       groupId: group.id,
       name: group.name,
-      message: "이미 참여 중인 그룹입니다",
+      message: "Already a member of this group",
     });
   }
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
 
   if ((count ?? 0) >= group.max_members) {
     return NextResponse.json(
-      { error: "그룹 인원이 가득 찼습니다" },
+      { error: "Group is full" },
       { status: 409 }
     );
   }
@@ -100,6 +100,6 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     groupId: group.id,
     name: group.name,
-    message: "그룹에 참여했습니다!",
+    message: "Joined the group!",
   });
 }

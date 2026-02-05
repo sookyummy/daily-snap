@@ -31,7 +31,7 @@ export async function generateCollage(params: CollageParams): Promise<Buffer> {
       <rect width="100%" height="100%" fill="white"/>
       <text x="${SIZE / 2}" y="35" text-anchor="middle"
             font-family="Arial, sans-serif" font-size="16" fill="#999">
-        ${groupName} | Daily Snap
+        ${groupName} | Stichy
       </text>
     </svg>
   `);

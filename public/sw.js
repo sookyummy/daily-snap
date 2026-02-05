@@ -8,7 +8,7 @@ self.addEventListener("push", function (event) {
     vibrate: [200, 100, 200],
   };
   event.waitUntil(
-    self.registration.showNotification(data.title || "Daily Snap", options)
+    self.registration.showNotification(data.title || "Stichy", options)
   );
 });
 

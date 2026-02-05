@@ -41,7 +41,7 @@ export default function CollagePage() {
     if (!data?.collageUrl) return;
     const a = document.createElement("a");
     a.href = data.collageUrl;
-    a.download = `dailysnap-${data.mission.date}.jpg`;
+    a.download = `stichy-${data.mission.date}.jpg`;
     a.click();
   };
 
@@ -52,12 +52,12 @@ export default function CollagePage() {
       try {
         const response = await fetch(data.collageUrl);
         const blob = await response.blob();
-        const file = new File([blob], `dailysnap-${data.mission.date}.jpg`, {
+        const file = new File([blob], `stichy-${data.mission.date}.jpg`, {
           type: "image/jpeg",
         });
         await navigator.share({
-          title: `Daily Snap - ${data.mission.keyword}`,
-          text: `${data.groupName}의 ${data.mission.date} 미션: ${data.mission.keyword} ${data.mission.emoji || ""}`,
+          title: `Stichy - ${data.mission.keyword}`,
+          text: `${data.groupName} · ${data.mission.date} mission: ${data.mission.keyword} ${data.mission.emoji || ""}`,
           files: [file],
         });
       } catch {
@@ -79,7 +79,7 @@ export default function CollagePage() {
   if (!data) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
-        <p className="text-gray-500">콜라주를 불러올 수 없습니다</p>
+        <p className="text-gray-500">Could not load collage</p>
       </div>
     );
   }
@@ -118,7 +118,7 @@ export default function CollagePage() {
           </div>
         ) : (
           <div className="mb-6 flex aspect-square items-center justify-center rounded-2xl bg-gray-100">
-            <p className="text-gray-400">콜라주 생성 중...</p>
+            <p className="text-gray-400">Generating collage...</p>
           </div>
         )}
 
@@ -128,20 +128,20 @@ export default function CollagePage() {
             onClick={handleSave}
             className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-200 py-3 text-sm font-semibold text-gray-700 transition-all active:scale-[0.98]"
           >
-            💾 저장
+            💾 Save
           </button>
           <button
             onClick={handleShare}
             className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--color-brand)] py-3 text-sm font-semibold text-white transition-all active:scale-[0.98]"
           >
-            📤 공유
+            📤 Share
           </button>
         </div>
 
         {/* Individual Photos */}
         <div className="mt-8">
           <h3 className="mb-3 text-sm font-semibold text-gray-700">
-            개별 사진
+            Individual Photos
           </h3>
           <div className="grid grid-cols-2 gap-3">
             {data.photos.map((photo) => (

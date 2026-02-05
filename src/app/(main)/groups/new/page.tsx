@@ -15,7 +15,7 @@ export default function NewGroupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      setError("그룹 이름을 입력해주세요");
+      setError("Please enter a group name");
       return;
     }
 
@@ -29,14 +29,14 @@ export default function NewGroupPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "그룹 생성에 실패했습니다");
+        setError(data.error || "Failed to create group");
         return;
       }
 
       const data = await res.json();
       router.push(`/groups/${data.id}?invite=true`);
     } catch {
-      setError("오류가 발생했습니다");
+      setError("An error occurred");
     } finally {
       setLoading(false);
     }
@@ -52,14 +52,14 @@ export default function NewGroupPage() {
         >
           ←
         </button>
-        <h1 className="pt-4 text-lg font-bold text-gray-900">그룹 만들기</h1>
+        <h1 className="pt-4 text-lg font-bold text-gray-900">Create Group</h1>
       </header>
 
       <form onSubmit={handleSubmit} className="px-5 py-6 space-y-6">
         {/* Group Name */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">
-            그룹 이름
+            Group Name
           </label>
           <input
             type="text"
@@ -68,7 +68,7 @@ export default function NewGroupPage() {
               setName(e.target.value);
               setError("");
             }}
-            placeholder="대학 친구들"
+            placeholder="College Friends"
             maxLength={MAX_GROUP_NAME_LENGTH}
             className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none transition-colors focus:border-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand)]/20"
           />
@@ -80,7 +80,7 @@ export default function NewGroupPage() {
         {/* Max Members */}
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
-            최대 인원
+            Max Members
           </label>
           <div className="flex gap-2">
             {[2, 3, 4, 5, 6, 7, 8].map((n) => (
@@ -103,7 +103,7 @@ export default function NewGroupPage() {
         {/* Mission Mode */}
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
-            미션 설정
+            Mission Mode
           </label>
           <div className="space-y-2">
             <button
@@ -116,10 +116,10 @@ export default function NewGroupPage() {
               }`}
             >
               <div className="text-sm font-medium text-gray-900">
-                자동 (매일 랜덤 주제)
+                Auto (Random daily topic)
               </div>
               <div className="text-xs text-gray-500">
-                시스템이 매일 아침 새로운 주제를 자동으로 선택합니다
+                The system picks a new topic every morning
               </div>
             </button>
             <button
@@ -132,10 +132,10 @@ export default function NewGroupPage() {
               }`}
             >
               <div className="text-sm font-medium text-gray-900">
-                직접 설정
+                Manual
               </div>
               <div className="text-xs text-gray-500">
-                방장이 직접 미션 주제를 정합니다
+                The group owner sets the mission topic
               </div>
             </button>
           </div>
@@ -150,7 +150,7 @@ export default function NewGroupPage() {
           disabled={loading || !name.trim()}
           className="w-full rounded-xl bg-[var(--color-brand)] px-6 py-3.5 text-base font-semibold text-white transition-all hover:bg-[var(--color-brand-dark)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {loading ? "만드는 중..." : "만들기"}
+          {loading ? "Creating..." : "Create"}
         </button>
       </form>
     </div>
